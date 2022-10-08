@@ -13,10 +13,11 @@ const main = async () => {
   websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
 
   let currentHeight = TARGET_HEIGHT
-  while (TARGET_HEIGHT - currentHeight < TOTAL_BLOCKS) {
+  while (currentHeight < TARGET_HEIGHT - TOTAL_BLOCKS) {
     currentHeight--
     const block = await websocketProvider.getBlock(TARGET_HEIGHT);
-    log(currentHeight, block)
+    const txs = block.transactions
+    log(txs)
   }
 
 };
