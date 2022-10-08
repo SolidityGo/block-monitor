@@ -59,7 +59,7 @@ const main = async () => {
   let currentHeight = TARGET_HEIGHT
   while (currentHeight > TARGET_HEIGHT - TOTAL_BLOCKS) {
     currentHeight--
-    const block = await websocketProvider.getBlock(TARGET_HEIGHT);
+    const block = await websocketProvider.getBlock(currentHeight);
 
     if (!block) continue
 
