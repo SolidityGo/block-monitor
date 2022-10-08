@@ -9,6 +9,16 @@ const WEBSOCKET_URL = 'ws://localhost:9046';
 const TARGET_HEIGHT = 21957793
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
+function checkTxs(txs: string[]) {
+  for (let i = 0; i < txs.length; i++) {
+    const txHash = txs[i]
+    if (!txHash) continue
+
+    const tx = websocketProvider.getTransaction(txHash)
+    log(tx)
+  }
+}
+
 const main = async () => {
   websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
 
@@ -16,10 +26,14 @@ const main = async () => {
   while (currentHeight > TARGET_HEIGHT - TOTAL_BLOCKS) {
     currentHeight--
     const block = await websocketProvider.getBlock(TARGET_HEIGHT);
-    const txs = block.transactions
-    log(txs)
-  }
 
+    if (!block) continue
+
+    log('get block for ', currentHeight)
+
+    const txs = block.transactions
+    checkTxs(txs)
+  }
 };
 
 main()
