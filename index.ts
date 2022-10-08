@@ -17,9 +17,10 @@ const iFace = new utils.Interface([
   // "function removeLiquidityETH(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline) external returns (uint256 amountToken, uint256 amountETH)",
 
   "function addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline) external returns (uint256 amountA, uint256 amountB, uint256 liquidity)",
+  "function handlePackage(bytes calldata payload, bytes calldata proof, uint64 height, uint64 packageSequence, uint8 channelId) external",
 ])
 
-const sigHash = iFace.getSighash("addLiquidity")
+const targetSigHash = iFace.getSighash("handlePackage")
 
 const parseTx = async (tx: TransactionResponse) => {
   const data = tx.data
@@ -27,14 +28,17 @@ const parseTx = async (tx: TransactionResponse) => {
   // log('sigHash', sigHash)
 
   if (!data || data.length < 8) return
-  if (data.indexOf(sigHash) < 0) return
-
+  if (data.indexOf(targetSigHash) < 0) return
 
   try {
     let parsedTx = iFace.parseTransaction(tx)
     // log(parsedTx)
     log(parsedTx.args)
     log(parsedTx.name)
+
+    const txUrl = `https://bscscan.com/tx/${tx.hash}`;
+    log(txUrl)
+
   } catch (e) {
     log('parse tx error', e)
   }
