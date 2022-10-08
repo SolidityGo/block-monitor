@@ -12,13 +12,27 @@ const WEBSOCKET_URL = 'ws://localhost:9046';
 const TARGET_HEIGHT = 21957793
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
+const iFace = new utils.Interface([
+  // "function exactInputSingle(tuple(address tokenIn, address tokenOut, uint25624 fee, address recipient, uint256 deadline, uint256 amountIn, uint256 amountOutMinimum, uint256160 sqrtPriceLimitX96) calldata) external payable returns (uint256 amountOut)",
+  "function removeLiquidityETH(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline) external returns (uint256 amountToken, uint256 amountETH)",
+])
+
 const parseTx = async (tx: TransactionResponse) => {
   const data = tx.data
 
-  try {} catch (e) {
+  if (!data || data.length < 8) return
+  if (data.indexOf(iFace.getSighash("removeLiquidityETH")) < 0) return
 
+  try {
+    let parsedTx = iFace.parseTransaction(tx)
+    log(parsedTx)
+    log(parsedTx.args)
+    log(parsedTx.name)
+  } catch (e) {
+    log('parse tx error', e)
   }
-  log(data)
+
+
 }
 
 const checkTxs = async (txs: string[]) => {
