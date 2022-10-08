@@ -107,14 +107,18 @@ const main = async () => {
     try {
       currentHeight--
       const block = await websocketProvider.getBlock(currentHeight);
-      if (!block) continue
+      if (!block) {
+        log('can not get block', currentHeight)
+        continue
+      }
       const txs = block.transactions
 
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
-      if (currentHeight % 1000 === 0) {
-        log('get block for ', currentHeight, "txs", txs.length)
+      if (currentHeight % 500 === 0) {
+        let timeStr = new Date().toLocaleString();
+        log(timeStr, 'get block for ', currentHeight, "txs", txs.length)
         fs.writeFileSync(file, JSON.stringify(config, null, 2))
       }
 
