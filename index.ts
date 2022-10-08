@@ -24,7 +24,7 @@ const sigHash = iFace.getSighash("addLiquidity")
 const parseTx = async (tx: TransactionResponse) => {
   const data = tx.data
 
-  log('sigHash', sigHash)
+  // log('sigHash', sigHash)
 
   if (!data || data.length < 8) return
   if (data.indexOf(sigHash) < 0) return
