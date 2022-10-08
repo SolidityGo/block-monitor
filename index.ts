@@ -1,6 +1,17 @@
 import { ethers, utils, providers, BigNumber} from "ethers";
 import {TransactionResponse} from "@ethersproject/abstract-provider";
 import { WebSocketProvider } from '@ethersproject/providers';
+import fs from "fs";
+
+export interface MonitorConfig {
+  targetFunction: string;
+
+  fromBlock: number;
+  endBlock: number;
+  currentBlock: number;
+
+  result: [];
+}
 
 const log = console.log;
 
@@ -12,15 +23,15 @@ const WEBSOCKET_URL = 'ws://localhost:9046';
 const TARGET_HEIGHT = 21957793
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
-const iFace = new utils.Interface([
-  // "function exactInputSingle(tuple(address tokenIn, address tokenOut, uint25624 fee, address recipient, uint256 deadline, uint256 amountIn, uint256 amountOutMinimum, uint256160 sqrtPriceLimitX96) calldata) external payable returns (uint256 amountOut)",
-  // "function removeLiquidityETH(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline) external returns (uint256 amountToken, uint256 amountETH)",
+let currentBcHeight: number = 0
+let config: MonitorConfig
 
-  "function addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline) external returns (uint256 amountA, uint256 amountB, uint256 liquidity)",
+const iFace = new utils.Interface([
   "function handlePackage(bytes calldata payload, bytes calldata proof, uint64 height, uint64 packageSequence, uint8 channelId) external",
 ])
 
-const targetSigHash = iFace.getSighash("handlePackage")
+const targetFunction = "handlePackage"
+const targetSigHash = iFace.getSighash(targetFunction)
 
 const parseTx = async (tx: TransactionResponse) => {
   const data = tx.data
@@ -47,8 +58,21 @@ const checkTxs = async (txs: string[]) => {
   }
 }
 
-const main = async () => {
+const init = async () => {
   websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
+
+  const dataDir = __dirname;
+
+  const file = dataDir + '/monitor-' + targetFunction + '.json';
+  if (!fs.existsSync(file)) {
+    fs.writeSync(file, JSON.stringify(config, null, 2))
+  }
+
+  config = require(file) as MonitorConfig
+}
+
+const main = async () => {
+  await init()
 
   let currentHeight = TARGET_HEIGHT
   while (currentHeight > TARGET_HEIGHT - TOTAL_BLOCKS) {
