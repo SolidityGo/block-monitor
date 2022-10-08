@@ -10,7 +10,7 @@ const main = async () => {
 
 
   websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
-  const block = await websocketProvider.getBlock(21721519);
+  const block = await websocketProvider.getBlock(21779350);
   log(block);
 };
 
