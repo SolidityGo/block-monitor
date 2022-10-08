@@ -109,12 +109,12 @@ const main = async () => {
       const block = await websocketProvider.getBlock(currentHeight);
       if (!block) continue
       const txs = block.transactions
-      log('get block for ', currentHeight, "txs", txs.length)
 
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
       if (currentHeight % 100 === 0) {
+        log('get block for ', currentHeight, "txs", txs.length)
         fs.writeFileSync(file, JSON.stringify(config, null, 2))
       }
 
