@@ -24,24 +24,15 @@ const targetSigHash = iFace.getSighash("handlePackage")
 
 const parseTx = async (tx: TransactionResponse) => {
   const data = tx.data
-
-  // log('sigHash', sigHash)
-
   if (!data || data.length < 8) return
   if (data.indexOf(targetSigHash) < 0) return
 
-  try {
     let parsedTx = iFace.parseTransaction(tx)
     const bcHeight = parsedTx.args[2] as BigNumber
 
     log(parsedTx.name, "height of BC", bcHeight.toNumber())
     const txUrl = `https://bscscan.com/tx/${tx.hash}`;
     log(txUrl)
-
-  } catch (e) {
-    log('parse tx error', e)
-  }
-
 }
 
 const checkTxs = async (txs: string[]) => {
@@ -61,17 +52,23 @@ const main = async () => {
 
   let currentHeight = TARGET_HEIGHT
   while (currentHeight > TARGET_HEIGHT - TOTAL_BLOCKS) {
-    currentHeight--
-    const block = await websocketProvider.getBlock(currentHeight);
+    try {
+      currentHeight--
+      const block = await websocketProvider.getBlock(currentHeight);
+      if (!block) continue
+      const txs = block.transactions
+      log('get block for ', currentHeight, "txs", txs.length)
 
-    if (!block) continue
-
-    const txs = block.transactions
-
-    // log('get block for ', currentHeight, "txs", txs.length)
-
-    checkTxs(txs).then()
+      checkTxs(txs).then()
+    } catch (e) {
+      log('error', e)
+      await sleepMS(2000)
+    }
   }
+};
+
+const sleepMS = async (ms) => {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 main()
