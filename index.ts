@@ -24,7 +24,6 @@ const TARGET_HEIGHT = 21957793
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
 let currentBcHeight: number = 0
-let config: MonitorConfig
 
 const iFace = new utils.Interface([
   "function handlePackage(bytes calldata payload, bytes calldata proof, uint64 height, uint64 packageSequence, uint8 channelId) external",
@@ -32,6 +31,17 @@ const iFace = new utils.Interface([
 
 const targetFunction = "handlePackage"
 const targetSigHash = iFace.getSighash(targetFunction)
+
+let config: MonitorConfig = {
+  targetFunction,
+
+  fromBlock: TARGET_HEIGHT,
+  endBlock: TARGET_HEIGHT - TOTAL_BLOCKS,
+
+  currentBlock: TARGET_HEIGHT - 1,
+
+  result: [],
+}
 
 const parseTx = async (tx: TransactionResponse) => {
   const data = tx.data
@@ -65,7 +75,7 @@ const init = async () => {
 
   const file = dataDir + '/monitor-' + targetFunction + '.json';
   if (!fs.existsSync(file)) {
-    fs.writeSync(file, JSON.stringify(config, null, 2))
+    fs.writeFileSync(file, JSON.stringify(config, null, 2))
   }
 
   config = require(file) as MonitorConfig
