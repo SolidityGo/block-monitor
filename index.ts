@@ -3,7 +3,8 @@ const log = console.log;
 
 let websocketProvider;
 
-const WEBSOCKET_URL = 'ws://localhost:9046';
+// const WEBSOCKET_URL = 'ws://localhost:9046';
+const WEBSOCKET_URL = 'ws://localhost:8546';
 const TARGET_HEIGHT = 21957793
 
 const main = async () => {
