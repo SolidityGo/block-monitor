@@ -32,7 +32,9 @@ const parseTx = async (tx: TransactionResponse) => {
 
   try {
     let parsedTx = iFace.parseTransaction(tx)
-    log(parsedTx.name, "height of BC", parsedTx.args[2])
+    const bcHeight = parsedTx.args[2] as BigNumber
+
+    log(parsedTx.name, "height of BC", bcHeight.toNumber())
     const txUrl = `https://bscscan.com/tx/${tx.hash}`;
     log(txUrl)
 
