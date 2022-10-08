@@ -66,7 +66,7 @@ const main = async () => {
 
     const txs = block.transactions
 
-    log('get block for ', currentHeight, "txs", txs.length)
+    // log('get block for ', currentHeight, "txs", txs.length)
 
     checkTxs(txs).then()
   }
