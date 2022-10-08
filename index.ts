@@ -114,7 +114,7 @@ const main = async () => {
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
-      if (currentHeight % 1000 === 0) {
+      if (currentHeight % 100 === 0) {
         fs.writeFileSync(file, JSON.stringify(config, null, 2))
       }
 
