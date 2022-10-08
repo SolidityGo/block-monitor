@@ -67,7 +67,7 @@ const main = async () => {
   }
 };
 
-const sleepMS = async (ms) => {
+const sleepMS = async (ms: number) => {
   await new Promise((resolve) => setTimeout(resolve, ms));
 };
 
