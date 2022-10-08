@@ -8,9 +8,11 @@ export interface MonitorConfig {
 
   fromBlock: number;
   endBlock: number;
-  currentBlock: number;
 
-  result: [];
+  currentBlock: number;
+  currentBCHeight: number;
+
+  result: any[];
 }
 
 const log = console.log;
@@ -40,6 +42,7 @@ let config: MonitorConfig = {
   endBlock: TARGET_HEIGHT - TOTAL_BLOCKS,
 
   currentBlock: TARGET_HEIGHT - 1,
+  currentBCHeight: 0,
 
   result: [],
 }
@@ -50,10 +53,25 @@ const parseTx = async (tx: TransactionResponse) => {
   if (data.indexOf(targetSigHash) < 0) return
 
     let parsedTx = iFace.parseTransaction(tx)
-    const bcHeight = parsedTx.args[2] as BigNumber
+    const bcHeight = (parsedTx.args[2] as BigNumber).toNumber()
+    if (config.currentBCHeight == 0) {
+      config.currentBCHeight = bcHeight
+    }
 
-    log(parsedTx.name, "height of BC", bcHeight.toNumber())
+    log(parsedTx.name, "height of BC", bcHeight)
+
     const txUrl = `https://bscscan.com/tx/${tx.hash}`;
+
+    if (config.currentBCHeight - bcHeight > 1_000) {
+      config.result.push({
+        bcHeight,
+        txUrl,
+        args: parsedTx.args
+      })
+    } else {
+      config.currentBCHeight = bcHeight
+    }
+
     log(txUrl)
 }
 
@@ -95,6 +113,10 @@ const main = async () => {
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
+      if (currentHeight % 1000 == 0) {
+        fs.writeFileSync(file, JSON.stringify(config, null, 2))
+      }
+
     } catch (e) {
       log('error', e)
 
