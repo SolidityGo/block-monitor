@@ -1,7 +1,10 @@
 import { ethers, utils, providers, BigNumber} from "ethers";
+import {TransactionResponse} from "@ethersproject/abstract-provider";
+import { WebSocketProvider } from '@ethersproject/providers';
+
 const log = console.log;
 
-let websocketProvider: providers.WebSocketProvider;
+let websocketProvider: WebSocketProvider;
 
 const WEBSOCKET_URL = 'ws://localhost:9046';
 // const WEBSOCKET_URL = 'ws://localhost:8546';
@@ -9,13 +12,24 @@ const WEBSOCKET_URL = 'ws://localhost:9046';
 const TARGET_HEIGHT = 21957793
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
+const parseTx = async (tx: TransactionResponse) => {
+  const data = tx.data
+
+  try {} catch (e) {
+
+  }
+  log(data)
+}
+
 const checkTxs = async (txs: string[]) => {
   for (let i = 0; i < txs.length; i++) {
     const txHash = txs[i]
     if (!txHash) continue
 
     const tx = await websocketProvider.getTransaction(txHash)
-    log(tx)
+    if (!tx) continue
+    
+    await parseTx(tx)
   }
 }
 
