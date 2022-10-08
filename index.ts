@@ -31,6 +31,7 @@ const iFace = new utils.Interface([
 
 const targetFunction = "handlePackage"
 const targetSigHash = iFace.getSighash(targetFunction)
+const file = __dirname + '/monitor-' + targetFunction + '.json';
 
 let config: MonitorConfig = {
   targetFunction,
@@ -71,9 +72,6 @@ const checkTxs = async (txs: string[]) => {
 const init = async () => {
   websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
 
-  const dataDir = __dirname;
-
-  const file = dataDir + '/monitor-' + targetFunction + '.json';
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, JSON.stringify(config, null, 2))
   }
@@ -84,7 +82,8 @@ const init = async () => {
 const main = async () => {
   await init()
 
-  let currentHeight = TARGET_HEIGHT
+  let currentHeight = config.currentBlock > 0 ? config.currentBlock : TARGET_HEIGHT
+
   while (currentHeight > TARGET_HEIGHT - TOTAL_BLOCKS) {
     try {
       currentHeight--
@@ -93,9 +92,13 @@ const main = async () => {
       const txs = block.transactions
       log('get block for ', currentHeight, "txs", txs.length)
 
-      checkTxs(txs).then()
+      await checkTxs(txs)
+
+      config.currentBlock = currentHeight
     } catch (e) {
       log('error', e)
+
+      fs.writeFileSync(file, JSON.stringify(config, null, 2))
       await sleepMS(2000)
     }
   }
@@ -106,7 +109,10 @@ const sleepMS = async (ms: number) => {
 };
 
 main()
-  .then(() => process.exit(0))
+  .then(() => {
+    fs.writeFileSync(file, JSON.stringify(config, null, 2))
+    return process.exit(0)
+  })
   .catch((error) => {
     console.error(error);
     process.exit(1);
