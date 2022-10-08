@@ -3,16 +3,22 @@ const log = console.log;
 
 let websocketProvider;
 
-// const WEBSOCKET_URL = 'ws://localhost:9046';
-const WEBSOCKET_URL = 'ws://localhost:8546';
+const WEBSOCKET_URL = 'ws://localhost:9046';
+// const WEBSOCKET_URL = 'ws://localhost:8546';
+
 const TARGET_HEIGHT = 21957793
+const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
 const main = async () => {
-
-
   websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
-  const block = await websocketProvider.getBlock(TARGET_HEIGHT);
-  log(block);
+
+  let currentHeight = TARGET_HEIGHT
+  while (TARGET_HEIGHT - currentHeight < TOTAL_BLOCKS) {
+    currentHeight--
+    const block = await websocketProvider.getBlock(TARGET_HEIGHT);
+    log(currentHeight, block)
+  }
+
 };
 
 main()
