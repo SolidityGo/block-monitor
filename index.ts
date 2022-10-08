@@ -32,7 +32,7 @@ const parseTx = async (tx: TransactionResponse) => {
 
   try {
     let parsedTx = iFace.parseTransaction(tx)
-    log(parsedTx)
+    // log(parsedTx)
     log(parsedTx.args)
     log(parsedTx.name)
   } catch (e) {
