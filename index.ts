@@ -1,7 +1,7 @@
 import { ethers, utils, providers, BigNumber} from "ethers";
 const log = console.log;
 
-let websocketProvider;
+let websocketProvider: providers.WebSocketProvider;
 
 const WEBSOCKET_URL = 'ws://localhost:9046';
 // const WEBSOCKET_URL = 'ws://localhost:8546';
@@ -9,12 +9,12 @@ const WEBSOCKET_URL = 'ws://localhost:9046';
 const TARGET_HEIGHT = 21957793
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
-function checkTxs(txs: string[]) {
+const checkTxs = async (txs: string[]) => {
   for (let i = 0; i < txs.length; i++) {
     const txHash = txs[i]
     if (!txHash) continue
 
-    const tx = websocketProvider.getTransaction(txHash)
+    const tx = await websocketProvider.getTransaction(txHash)
     log(tx)
   }
 }
@@ -32,7 +32,7 @@ const main = async () => {
     log('get block for ', currentHeight)
 
     const txs = block.transactions
-    checkTxs(txs)
+    checkTxs(txs).then()
   }
 };
 
