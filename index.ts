@@ -62,7 +62,7 @@ const parseTx = async (tx: TransactionResponse) => {
 
     const txUrl = `https://bscscan.com/tx/${tx.hash}`;
 
-    if (config.currentBCHeight - bcHeight > 2_000) {
+    if (config.currentBCHeight - bcHeight > 5_000) {
       config.result.push({
         bcHeight,
         txUrl,
