@@ -4,10 +4,13 @@ const log = console.log;
 let websocketProvider;
 
 const WEBSOCKET_URL = 'ws://localhost:9046';
+const TARGET_HEIGHT = 21957793
 
 const main = async () => {
+
+
   websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
-  const block = await websocketProvider.getBlock(21093793);
+  const block = await websocketProvider.getBlock(21293793);
   log(block);
 };
 
