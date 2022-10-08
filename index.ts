@@ -72,6 +72,7 @@ const parseTx = async (tx: TransactionResponse) => {
       config.currentBCHeight = bcHeight
     }
 
+    log('config.currentBCHeight', config.currentBCHeight)
     log(txUrl)
 }
 
@@ -113,7 +114,7 @@ const main = async () => {
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
-      if (currentHeight % 1000 == 0) {
+      if (currentHeight % 1000 === 0) {
         fs.writeFileSync(file, JSON.stringify(config, null, 2))
       }
 
