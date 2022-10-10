@@ -20,10 +20,12 @@ const log = console.log;
 
 let websocketProvider: WebSocketProvider;
 
-const WEBSOCKET_URL = 'ws://localhost:9046';
+// const WEBSOCKET_URL = 'ws://localhost:9046';
+// const WEBSOCKET_URL = 'ws://data-seed-prebsc-2-s3.binance.org:8545/';
 // const WEBSOCKET_URL = 'ws://localhost:8546';
+const WEBSOCKET_URL = 'ws://data-seed-prebsc-1-s1.binance.org:8545/';
 
-const TARGET_HEIGHT = 21957793
+const TARGET_HEIGHT = 23474117
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
 
 let currentBcHeight: number = 0
@@ -34,7 +36,7 @@ const iFace = new utils.Interface([
 
 const targetFunction = "handlePackage"
 const targetSigHash = iFace.getSighash(targetFunction)
-const file = __dirname + '/monitor-' + targetFunction + '.json';
+const file = __dirname + '/testnet-monitor-' + targetFunction + '.json';
 
 let config: MonitorConfig = {
   targetFunction,
@@ -63,7 +65,7 @@ const parseTx = async (tx: TransactionResponse) => {
 
     const txUrl = `https://bscscan.com/tx/${tx.hash}`;
 
-    if (config.currentBCHeight - bcHeight > 5_000) {
+    if (config.currentBCHeight - bcHeight > 10_000) {
       config.result.push({
         bcHeight,
         txUrl,
@@ -96,6 +98,8 @@ const init = async () => {
   }
 
   config = require(file) as MonitorConfig
+
+  log('current config', JSON.stringify(config, null, 2))
 }
 
 const main = async () => {
@@ -107,13 +111,16 @@ const main = async () => {
     try {
       currentHeight--
       const block = await websocketProvider.getBlock(currentHeight);
+
+      log(currentHeight, block)
+
       if (!block) continue
       const txs = block.transactions
 
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
-      if (currentHeight % 1000 === 0) {
+      if (currentHeight % 200 === 0) {
         log('get block for ', currentHeight, "txs", txs.length)
         fs.writeFileSync(file, JSON.stringify(config, null, 2))
       }
