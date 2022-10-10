@@ -68,6 +68,8 @@ const parseTx = async (tx: TransactionResponse) => {
         bcHeight,
         txUrl,
       })
+
+      console.log('------------', 'found result on bcHeight', bcHeight)
     } else {
       config.currentBCHeight = bcHeight
     }
