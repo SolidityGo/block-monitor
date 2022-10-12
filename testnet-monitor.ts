@@ -94,7 +94,6 @@ const checkTxs = async (txs: string[]) => {
     rpcProvider = rpcProviders[i % rpcProviders.length]
     const tx = await rpcProvider.getTransaction(txHash)
 
-
     if (!tx) {
       log("ERROR get this tx", i, txHash)
       continue
@@ -137,7 +136,7 @@ const main = async () => {
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
-      if (currentHeight % 100 === 0) {
+      if (currentHeight % 10 === 0) {
         let timeStr = new Date().toLocaleString();
 
         const blockTimeStr = new Date(block.timestamp * 1000).toLocaleString()
