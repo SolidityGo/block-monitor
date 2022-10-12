@@ -94,9 +94,11 @@ const checkTxs = async (txs: string[]) => {
     rpcProvider = rpcProviders[i % rpcProviders.length]
     const tx = await rpcProvider.getTransaction(txHash)
 
-    log(i, tx.blockNumber, tx.hash)
 
-    if (!tx) continue
+    if (!tx) {
+      log("ERROR get this tx", i, tx.blockNumber, tx.hash)
+      continue
+    }
     
     await parseTx(tx)
     await sleepMS(10)
