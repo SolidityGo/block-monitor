@@ -96,7 +96,7 @@ const checkTxs = async (txs: string[]) => {
 
 
     if (!tx) {
-      log("ERROR get this tx", i, tx.blockNumber, tx.hash)
+      log("ERROR get this tx", i, txHash)
       continue
     }
     
