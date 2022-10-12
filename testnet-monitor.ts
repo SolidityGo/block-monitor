@@ -19,13 +19,19 @@ export interface MonitorConfig {
 const log = console.log;
 
 // let websocketProvider: WebSocketProvider;
+let rpcProviders: JsonRpcProvider[];
 let rpcProvider: JsonRpcProvider;
 
 // const WEBSOCKET_URL = 'ws://localhost:9046';
 // const WEBSOCKET_URL = 'ws://data-seed-prebsc-2-s3.binance.org:8545/';
 // const WEBSOCKET_URL = 'ws://localhost:8546';
 const WEBSOCKET_URL = 'ws://data-seed-prebsc-1-s1.binance.org:8545/';
-const RPC_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
+const RPC_URLs = [
+  'https://data-seed-prebsc-1-s1.binance.org:8545/',
+  'https://data-seed-prebsc-2-s1.binance.org:8545/',
+  'https://data-seed-prebsc-1-s3.binance.org:8545/',
+  'https://data-seed-prebsc-2-s3.binance.org:8545/',
+]
 
 const TARGET_HEIGHT = 23474117
 const TOTAL_BLOCKS = 90 * 24 * 3600 / 3;  // block in 30 days
@@ -86,16 +92,21 @@ const checkTxs = async (txs: string[]) => {
     const txHash = txs[i]
     if (!txHash) continue
 
+    rpcProvider = rpcProviders[i % rpcProviders.length]
     const tx = await rpcProvider.getTransaction(txHash)
+
+    log(i, tx.blockNumber, tx.hash)
+
     if (!tx) continue
     
     await parseTx(tx)
+    await sleepMS(10)
   }
 }
 
 const init = async () => {
   // websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
-  rpcProvider = new JsonRpcProvider(RPC_URL);
+  rpcProviders = RPC_URLs.map(url => new JsonRpcProvider(url))
 
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, JSON.stringify(config, null, 2))
