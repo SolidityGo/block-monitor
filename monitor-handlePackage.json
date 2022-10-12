@@ -2,8 +2,8 @@
   "targetFunction": "handlePackage",
   "fromBlock": 21957793,
   "endBlock": 21093793,
-  "currentBlock": 21355500,
-  "currentBCHeight": 266654827,
+  "currentBlock": 21355000,
+  "currentBCHeight": 266651853,
   "result": [
     {
       "bcHeight": 1,
