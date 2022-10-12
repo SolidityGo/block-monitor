@@ -2,12 +2,16 @@
   "targetFunction": "handlePackage",
   "fromBlock": 21957793,
   "endBlock": 21093793,
-  "currentBlock": 21855500,
-  "currentBCHeight": 270095810,
+  "currentBlock": 21358000,
+  "currentBCHeight": 266671752,
   "result": [
     {
       "bcHeight": 1,
       "txUrl": "https://bscscan.com/tx/0x050360389889e54a94c5c4773cb201b933eb8b3abe24bdb7c7e4d4b79fb95fb9"
+    },
+    {
+      "bcHeight": 1,
+      "txUrl": "https://bscscan.com/tx/0x07eb87f9d72a31b4fd93ef57f3dc6c298589738839b4f2183ffb974e4d010132"
     }
   ]
 }

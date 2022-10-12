@@ -1,6 +1,6 @@
 import { ethers, utils, providers, BigNumber} from "ethers";
 import {TransactionResponse} from "@ethersproject/abstract-provider";
-import { WebSocketProvider } from '@ethersproject/providers';
+import {JsonRpcProvider, WebSocketProvider} from '@ethersproject/providers';
 // @ts-ignore
 import fs from "fs";
 
@@ -18,12 +18,14 @@ export interface MonitorConfig {
 
 const log = console.log;
 
-let websocketProvider: WebSocketProvider;
+// let websocketProvider: WebSocketProvider;
+let rpcProvider: JsonRpcProvider;
 
 // const WEBSOCKET_URL = 'ws://localhost:9046';
 // const WEBSOCKET_URL = 'ws://data-seed-prebsc-2-s3.binance.org:8545/';
 // const WEBSOCKET_URL = 'ws://localhost:8546';
 const WEBSOCKET_URL = 'ws://data-seed-prebsc-1-s1.binance.org:8545/';
+const RPC_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 
 const TARGET_HEIGHT = 23474117
 const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
@@ -83,7 +85,7 @@ const checkTxs = async (txs: string[]) => {
     const txHash = txs[i]
     if (!txHash) continue
 
-    const tx = await websocketProvider.getTransaction(txHash)
+    const tx = await rpcProvider.getTransaction(txHash)
     if (!tx) continue
     
     await parseTx(tx)
@@ -91,7 +93,8 @@ const checkTxs = async (txs: string[]) => {
 }
 
 const init = async () => {
-  websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
+  // websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
+  rpcProvider = new JsonRpcProvider(RPC_URL);
 
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, JSON.stringify(config, null, 2))
@@ -110,7 +113,7 @@ const main = async () => {
   while (currentHeight > TARGET_HEIGHT - TOTAL_BLOCKS) {
     try {
       currentHeight--
-      const block = await websocketProvider.getBlock(currentHeight);
+      const block = await rpcProvider.getBlock(currentHeight);
 
       log(currentHeight, block)
 
@@ -125,6 +128,7 @@ const main = async () => {
         fs.writeFileSync(file, JSON.stringify(config, null, 2))
       }
 
+      await sleepMS(200)
     } catch (e) {
       log('error', e)
 
