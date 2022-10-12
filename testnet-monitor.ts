@@ -107,6 +107,7 @@ const checkTxs = async (txs: string[]) => {
 const init = async () => {
   // websocketProvider = new providers.WebSocketProvider(WEBSOCKET_URL);
   rpcProviders = RPC_URLs.map(url => new JsonRpcProvider(url))
+  rpcProvider = rpcProviders[0]
 
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, JSON.stringify(config, null, 2))
