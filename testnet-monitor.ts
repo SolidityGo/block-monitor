@@ -28,7 +28,7 @@ const WEBSOCKET_URL = 'ws://data-seed-prebsc-1-s1.binance.org:8545/';
 const RPC_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 
 const TARGET_HEIGHT = 23474117
-const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
+const TOTAL_BLOCKS = 90 * 24 * 3600 / 3;  // block in 30 days
 
 let currentBcHeight: number = 0
 
@@ -57,29 +57,30 @@ const parseTx = async (tx: TransactionResponse) => {
   if (!data || data.length < 8) return
   if (data.indexOf(targetSigHash) < 0) return
 
-    let parsedTx = iFace.parseTransaction(tx)
-    const bcHeight = (parsedTx.args[2] as BigNumber).toNumber()
-    if (config.currentBCHeight == 0) {
-      config.currentBCHeight = bcHeight
-    }
+  let parsedTx = iFace.parseTransaction(tx)
+  const bcHeight = (parsedTx.args[2] as BigNumber).toNumber()
+  if (config.currentBCHeight == 0) {
+    config.currentBCHeight = bcHeight
+  }
 
-    // log(parsedTx.name, "height of BC", bcHeight)
+  // log(parsedTx.name, "height of BC", bcHeight)
 
-    const txUrl = `https://bscscan.com/tx/${tx.hash}`;
+  const txUrl = `https://testnet.bscscan.com/tx/${tx.hash}`;
 
-    if (config.currentBCHeight - bcHeight > 10_000) {
-      config.result.push({
-        bcHeight,
-        txUrl,
-      })
-    } else {
-      config.currentBCHeight = bcHeight
-    }
+  if (config.currentBCHeight - bcHeight > 5_000) {
+    config.result.push({
+      bcHeight,
+      txUrl,
+    })
 
-    // log('config.currentBCHeight', config.currentBCHeight)
-    // log(txUrl)
+    console.log('------------', 'found result on bcHeight', bcHeight)
+  } else {
+    config.currentBCHeight = bcHeight
+  }
+
+  // log('config.currentBCHeight', config.currentBCHeight)
+  // log(txUrl)
 }
-
 const checkTxs = async (txs: string[]) => {
   for (let i = 0; i < txs.length; i++) {
     const txHash = txs[i]
@@ -114,17 +115,21 @@ const main = async () => {
     try {
       currentHeight--
       const block = await rpcProvider.getBlock(currentHeight);
-
-      log(currentHeight, block)
-
-      if (!block) continue
+      if (!block) {
+        log('can not get block', currentHeight)
+        continue
+      }
       const txs = block.transactions
 
       await checkTxs(txs)
 
       config.currentBlock = currentHeight
-      if (currentHeight % 200 === 0) {
-        log('get block for ', currentHeight, "txs", txs.length)
+      if (currentHeight % 100 === 0) {
+        let timeStr = new Date().toLocaleString();
+
+        const blockTimeStr = new Date(block.timestamp * 1000).toLocaleString()
+        log(timeStr, 'get block for ', currentHeight, "txs", txs.length, "block time is: ", blockTimeStr)
+
         fs.writeFileSync(file, JSON.stringify(config, null, 2))
       }
 
