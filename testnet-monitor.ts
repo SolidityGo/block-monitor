@@ -68,7 +68,7 @@ const parseTx = async (tx: TransactionResponse) => {
     config.currentBCHeight = bcHeight
   }
 
-  // log(parsedTx.name, "height of BC", bcHeight)
+  log(parsedTx.name, "height of BC", bcHeight)
 
   const txUrl = `https://testnet.bscscan.com/tx/${tx.hash}`;
 

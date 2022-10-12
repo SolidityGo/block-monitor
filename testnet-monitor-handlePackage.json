@@ -2,7 +2,7 @@
   "targetFunction": "testnet-handlePackage",
   "fromBlock": 23474117,
   "endBlock": 21093793,
-  "currentBlock": 23473900,
+  "currentBlock": 23473820,
   "currentBCHeight": 0,
   "result": []
 }
