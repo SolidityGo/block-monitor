@@ -103,6 +103,9 @@ const init = async () => {
 const main = async () => {
   await init()
 
+
+  log('start')
+
   let currentHeight = config.currentBlock > 0 ? config.currentBlock : TARGET_HEIGHT
 
   while (currentHeight > TARGET_HEIGHT - TOTAL_BLOCKS) {
