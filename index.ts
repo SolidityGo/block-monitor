@@ -24,7 +24,7 @@ const WEBSOCKET_URL = 'ws://localhost:9046';
 // const WEBSOCKET_URL = 'ws://localhost:8546';
 
 const TARGET_HEIGHT = 21957793
-const TOTAL_BLOCKS = 30 * 24 * 3600 / 3;  // block in 30 days
+const TOTAL_BLOCKS = 6 * 30 * 24 * 3600 / 3;  // block in 30 days
 
 let currentBcHeight: number = 0
 
